@@ -11,9 +11,9 @@ contract Escrow {
   The admin address will be PIK's address where all the intermediate charges
   from students & tutors will be withdrawn.
   */
-  address admin; //address of however first deploys the contract
-  address buyer; //address of buyer (in this case the student)
-  address seller; //address of seller (in this case the tutor)
+  address payable admin; //address of however first deploys the contract
+  address payable buyer; //address of buyer (in this case the student)
+  address payable seller; //address of seller (in this case the tutor)
   mapping(address => uint256) public deposits; // student deposits
   mapping(address => uint256) public stakes; // tutor stakes
 
@@ -48,4 +48,14 @@ contract Escrow {
 
     emit StakeDeposited(seller, stake);
   }
+
+  function releaseFunds() internal {
+    // add if statement for the escrow countdown or fulfilled function
+    uint256 payout = deposits + stakes;
+    seller.transfer(payout); 
+    deposits = 0;
+    stakes = 0;
+  } 
+  // ADD ESCROW COUNTDOWN
+  // ADD fee calculator and overall functionality
 }
