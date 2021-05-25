@@ -1,5 +1,7 @@
 pragma solidity >=0.6.0 <0.9.0;
 
+import "@openzeppelin/contracts/math/SafeMath.sol";
+
 /*
 The Escrow Smart Contract for PIK. An escrow is by definition a third party
 allowing two complete strangers to transact without the need for mutual trust.
@@ -7,6 +9,9 @@ The Escrow contract will hold and later release the assets of both parties
 provided they uphold their respective ends of the bargain.
 */
 contract Escrow {
+
+  using SafeMath for uint256;
+
   /*
   The admin address will be PIK's address where all the intermediate charges
   from students & tutors will be withdrawn.
@@ -36,7 +41,7 @@ contract Escrow {
   function depositPayment() payable {
     buyer = msg.sender;
     uint256 amount = msg.value;
-    deposits[buyer] = deposits[buyer] + amount;
+    deposits[buyer] = add(deposits[buyer], amount);
 
     emit PaymentDeposited(buyer, amount); 
   }
@@ -44,14 +49,14 @@ contract Escrow {
   function depositStake() payable {
     seller = msg.sender;
     uint256 stake = msg.value;
-    stakes[seller] = stakes[seller] + stake;
+    stakes[seller] = add(stakes[seller], stake);
 
     emit StakeDeposited(seller, stake);
   }
 
   function releaseFunds() internal {
     // add if statement for the escrow countdown or fulfilled function
-    uint256 payout = deposits + stakes;
+    uint256 payout = add(deposits, stakes);
     seller.transfer(payout); 
     deposits = 0;
     stakes = 0;
