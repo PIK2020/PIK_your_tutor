@@ -41,4 +41,11 @@ contract Escrow {
     emit PaymentDeposited(buyer, amount); 
   }
 
+  function depositStake() payable {
+    seller = msg.sender;
+    uint256 stake = msg.value;
+    stakes[seller] = stakes[seller] + stake;
+
+    emit StakeDeposited(seller, stake);
+  }
 }
