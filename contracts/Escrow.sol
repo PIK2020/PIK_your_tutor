@@ -1,4 +1,4 @@
-pragma solidity >=0.4.22 <0.9.0;
+pragma solidity >=0.6.0 <0.9.0;
 
 /*
 The Escrow Smart Contract for PIK. An escrow is by definition a third party
@@ -17,6 +17,10 @@ contract Escrow {
   mapping(address => uint256) public deposits; // student deposits
   mapping(address => uint256) public stakes; // tutor stakes
 
+  event StakeDeposited(address seller, uint256 amount);
+  event PaymentDeposited(address buyer, uint256 amount);
+  event Cancelled();
+
   constructor() {
     admin = msg.sender;
   }
@@ -28,5 +32,13 @@ contract Escrow {
   // define a function the student can trigger to confirm the tutoring session has taken place
   // define a punish function that the student can pay to to "destroy" part of or the entire stake of a bad tutor
   // ADD SafeMath from OpenZeppelin
+
+  function depositPayment() payable {
+    buyer = msg.sender;
+    uint256 amount = msg.value;
+    deposits[buyer] = deposits[buyer] + amount;
+
+    emit PaymentDeposited(buyer, amount); 
+  }
 
 }
