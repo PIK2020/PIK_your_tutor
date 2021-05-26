@@ -46,6 +46,7 @@ contract Escrow is Countdown {
   );
   event StakeDeposited(address seller, uint256 amount);
   event PaymentDeposited(address buyer, uint256 amount);
+  event Finalized(address agreement);
   event Cancelled();
 
   constructor() {
