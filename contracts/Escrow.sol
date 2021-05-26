@@ -35,6 +35,15 @@ contract Escrow is Countdown {
   mapping(address => uint256) public deposits; // student deposits
   mapping(address => uint256) public stakes; // tutor stakes
 
+  event Initialized(
+    address admin,
+    address buyer,
+    address seller,
+    uint256 paymentAmount,
+    uint256 stakeAmount,
+    uint256 countdownLength,
+    bytes agreementParams
+  );
   event StakeDeposited(address seller, uint256 amount);
   event PaymentDeposited(address buyer, uint256 amount);
   event Cancelled();
