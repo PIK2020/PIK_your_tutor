@@ -36,7 +36,6 @@ contract Escrow {
   // make use of a timer (one timer when the tutor first stakes, another timer when the student first accepts)
   // define a function the student can trigger to confirm the tutoring session has taken place
   // define a punish function that the student can pay to to "destroy" part of or the entire stake of a bad tutor
-  // ADD SafeMath from OpenZeppelin
 
   function depositPayment() payable {
     buyer = msg.sender;
