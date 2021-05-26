@@ -1,24 +1,37 @@
 pragma solidity >=0.6.0 <0.9.0;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
+import "./Countdown.sol";
 
-/*
-The Escrow Smart Contract for PIK. An escrow is by definition a third party
-allowing two complete strangers to transact without the need for mutual trust.
-The Escrow contract will hold and later release the assets of both parties 
-provided they uphold their respective ends of the bargain.
-*/
-contract Escrow {
+//The Escrow Smart Contract for PIK. An escrow is by definition a third party
+//allowing two complete strangers to transact without the need for mutual trust.
+//The Escrow contract will hold and later release the assets of both parties 
+//provided they uphold their respective ends of the bargain.
+
+contract Escrow is Countdown {
 
   using SafeMath for uint256;
+
+  // All the data we want to keep track of in our contract
+  struct Data {
+    address admin; //address of however first deploys the contract
+    address buyer; //address of buyer (in this case the student)
+    address seller; //address of seller (in this case the tutor)
+    uint128 paymentAmount;
+    uint128 stakeAmount;
+    AgreementParams agreementParams; 
+  }
+
+  // Parameters of the agreement set from the frontEnd
+  struct AgreementParams {
+    uint120 griefingRatio;
+    uint128 countdownLength;
+  }
 
   /*
   The admin address will be PIK's address where all the intermediate charges
   from students & tutors will be withdrawn.
   */
-  address payable admin; //address of however first deploys the contract
-  address payable buyer; //address of buyer (in this case the student)
-  address payable seller; //address of seller (in this case the tutor)
   mapping(address => uint256) public deposits; // student deposits
   mapping(address => uint256) public stakes; // tutor stakes
 
@@ -29,9 +42,8 @@ contract Escrow {
   constructor() {
     admin = msg.sender;
   }
-  // TODO: define a stake function (used by the tutor)
-  // define a deposit function (to be used by the student when they want to buy the tutoring session)
-  // define a withdraw function (to be triggered once the student confirms the tutoring session has taken place OR timer has ended)
+
+  // TODO:
   // define a helper function that is going to take fees at some point and transfer those to admin 
   // make use of a timer (one timer when the tutor first stakes, another timer when the student first accepts)
   // define a function the student can trigger to confirm the tutoring session has taken place
