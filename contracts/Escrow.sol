@@ -13,6 +13,7 @@ contract Escrow is Countdown {
   using SafeMath for uint256;
 
   // All the data we want to keep track of in our contract
+  Data private _data;
   struct Data {
     address admin; //address of however first deploys the contract
     address buyer; //address of buyer (in this case the student)
