@@ -50,11 +50,7 @@ contract Escrow is Countdown {
   event Finalized(address agreement);
   event Cancelled();
 
-  constructor() {
-    admin = msg.sender;
-  }
-
-  function initialize(
+  function constructor(
     address admin,
     address buyer,
     address seller,
@@ -74,6 +70,8 @@ contract Escrow is Countdown {
 
     if (admin != address(0)) {
       _data.admin = admin;
+    } else {
+      _data.admin = msg.sender;
     }
 
     // set countdown length
