@@ -54,6 +54,60 @@ contract Escrow is Countdown {
     admin = msg.sender;
   }
 
+  function initialize(
+    address admin,
+    address buyer,
+    address seller,
+    uint256 paymentAmount,
+    uint256 stakeAmount,
+    uint256 countdownLength,
+    bytes agreementParams
+  ) public {
+    // set participants if defined
+    if (buyer != address(0)) {
+      _data.buyer = buyer;
+    }
+
+    if (seller != address(0)) {
+      _data.seller = seller;
+    }
+
+    if (admin != address(0)) {
+      _data.admin = admin;
+    }
+
+    // set countdown length
+    Countdown._setLength(countdownLength);
+
+    // set payment/stake amounts if defined
+    if (paymentAmount != uint256(0)) {
+      require(paymentAmount <= uint256(uint128(paymentAmount)), "paymentAmount is too large");
+      _data.paymentAmount = uint128(paymentAmount);
+    }
+
+    if (stakeAmount != uint256(0) {
+      require(stakeAmount <= uint256(uint128(stakeAmount)), "stakeAmount is too large");
+      _data.stakeAmount = uint128(stakeAmount);
+    }
+
+    // set agreementParams if defined
+    if (agreementParams.length != 0) {
+      (
+        uint256 ratio,
+        uint256 countdownLength
+      ) = abi.decode(agreementParams, (uint256, uint256));
+      require(ratio == uint256(uint120(ratio)), "ratio out of bounds");
+      require(agreementCountdown == uint256(uint128(agreementCountdown)), "agreementCountdown out of bounds");
+      _data.agreementParams = AgreementParams(uint120(ratio), uint128(agreementCountdown));
+    }
+
+    emit Initialized(admin, buyer, seller, paymentAmount, stakeAmount, countdownLength, agreementParams);
+    
+    // In Erasure, tokenID and metadata are also initialized
+    // TODO: look into what needs to be done to enable token support
+
+  }
+
   // TODO:
   // define a helper function that is going to take fees at some point and transfer those to admin 
   // make use of a timer (one timer when the tutor first stakes, another timer when the student first accepts)
