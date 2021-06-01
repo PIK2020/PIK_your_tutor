@@ -49,6 +49,7 @@ contract Escrow is Countdown {
   event PaymentDeposited(address buyer, uint256 amount);
   event Finalized();
   event Cancelled();
+  event Ended();
 
   function constructor(
     address admin,
@@ -144,5 +145,10 @@ contract Escrow is Countdown {
     emit Finalized();
   }
 
+  function end() {
+    require(Countdown.getCountdownStatus() == isOver);
+    releaseFunds();
+    emit Ended();
+  }
 
 }
