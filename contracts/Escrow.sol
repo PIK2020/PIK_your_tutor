@@ -93,7 +93,7 @@ contract Escrow is Countdown {
     if (agreementParams.length != 0) {
       (
         uint256 ratio,
-        countdownLength
+        uint256 countdownLength
       ) = abi.decode(agreementParams, (uint256, uint256));
       require(ratio == uint256(uint120(ratio)), "ratio out of bounds");
       require(agreementCountdown == uint256(uint128(agreementCountdown)), "agreementCountdown out of bounds");
@@ -113,7 +113,7 @@ contract Escrow is Countdown {
   // define a function the student can trigger to confirm the tutoring session has taken place
   // define a punish function that the student can pay to to "destroy" part of or the entire stake of a bad tutor
 
-  function depositPayment() payable {
+  function depositPayment() public payable {
     buyer = msg.sender;
     uint256 amount = msg.value;
     deposits[buyer] = add(deposits[buyer], amount);
@@ -121,7 +121,7 @@ contract Escrow is Countdown {
     emit PaymentDeposited(buyer, amount); 
   }
 
-  function depositStake() payable {
+  function depositStake() public payable {
     seller = msg.sender;
     uint256 stake = msg.value;
     stakes[seller] = add(stakes[seller], stake);
@@ -140,14 +140,14 @@ contract Escrow is Countdown {
   // ADD fee calculator and overall functionality
 
   // Finalize agreement, check that everything is set, and start countdown
-  function finalize() {
+  function finalize() internal {
     require(_data.admin != address(0) && _data.buyer != address(0) && _data.seller != address(0) && _data.paymentAmount != 0 && _data.stakeAmount != 0 && _data.agreementParams[0] != 0 && _data.agreementParams[1] != 0, "Contract not initialized, check if you deposited funds correctly.");
     Countdown._start();
     emit Finalized();
   }
 
   // End the contract
-  function end() {
+  function end() internal {
     require(Countdown.getCountdownStatus() == isOver);
     releaseFunds();
     emit Ended();
@@ -155,7 +155,7 @@ contract Escrow is Countdown {
 
   // Punish functio for the buyer to use if the service was dissatisfactory
   // Also ends the contract
-  function punish() payable {
+  function punish() public payable {
     require(Countdown.getCountdownStatus() == isActive); // can only be used before the countdown is over
     require(buyer == msg.sender, "Only buyer can use this function");
     correctDeposit = div(_data.stakeAmount, _data.agreementParams.ratio);
