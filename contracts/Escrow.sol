@@ -151,4 +151,13 @@ contract Escrow is Countdown {
     emit Ended();
   }
 
+  function punish() payable {
+    require(buyer == msg.sender, "Only buyer can use this function");
+    correctDeposit = div(_data.stakeAmount, _data.agreementParams.ratio);
+    require(msg.value >= correctDeposit, "Insufficient funds provided");
+    admin.transfer(msg.value); //Transfer the fee to admin account 
+    admin.transfer(add(deposits, stakes)); //ToDo: add separate function for releasing funds to admin
+    emit Ended();
+  }
+
 }
