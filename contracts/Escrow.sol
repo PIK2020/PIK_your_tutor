@@ -13,6 +13,7 @@ contract Escrow is Countdown {
   using SafeMath for uint256;
 
   // All the data we want to keep track of in our contract
+  Data private _data;
   struct Data {
     address admin; //address of however first deploys the contract
     address buyer; //address of buyer (in this case the student)
@@ -35,12 +36,75 @@ contract Escrow is Countdown {
   mapping(address => uint256) public deposits; // student deposits
   mapping(address => uint256) public stakes; // tutor stakes
 
+  event Initialized(
+    address admin,
+    address buyer,
+    address seller,
+    uint256 paymentAmount,
+    uint256 stakeAmount,
+    uint256 countdownLength,
+    bytes agreementParams
+  );
   event StakeDeposited(address seller, uint256 amount);
   event PaymentDeposited(address buyer, uint256 amount);
+  event Finalized();
   event Cancelled();
+  event Ended();
 
-  constructor() {
-    admin = msg.sender;
+  function constructor(
+    address admin,
+    address buyer,
+    address seller,
+    uint256 paymentAmount,
+    uint256 stakeAmount,
+    uint256 countdownLength,
+    bytes agreementParams
+  ) public {
+    // set participants if defined
+    if (buyer != address(0)) {
+      _data.buyer = buyer;
+    }
+
+    if (seller != address(0)) {
+      _data.seller = seller;
+    }
+
+    if (admin != address(0)) {
+      _data.admin = admin;
+    } else {
+      _data.admin = msg.sender;
+    }
+
+    // set countdown length
+    Countdown._setLength(countdownLength);
+
+    // set payment/stake amounts if defined
+    if (paymentAmount != uint256(0)) {
+      require(paymentAmount <= uint256(uint128(paymentAmount)), "paymentAmount is too large");
+      _data.paymentAmount = uint128(paymentAmount);
+    }
+
+    if (stakeAmount != uint256(0) {
+      require(stakeAmount <= uint256(uint128(stakeAmount)), "stakeAmount is too large");
+      _data.stakeAmount = uint128(stakeAmount);
+    }
+
+    // set agreementParams if defined
+    if (agreementParams.length != 0) {
+      (
+        uint256 ratio,
+        uint256 countdownLength
+      ) = abi.decode(agreementParams, (uint256, uint256));
+      require(ratio == uint256(uint120(ratio)), "ratio out of bounds");
+      require(agreementCountdown == uint256(uint128(agreementCountdown)), "agreementCountdown out of bounds");
+      _data.agreementParams = AgreementParams(uint120(ratio), uint128(agreementCountdown));
+    }
+
+    emit Initialized(admin, buyer, seller, paymentAmount, stakeAmount, countdownLength, agreementParams);
+    
+    // In Erasure, tokenID and metadata are also initialized
+    // TODO: look into what needs to be done to enable token support
+
   }
 
   // TODO:
@@ -74,4 +138,31 @@ contract Escrow is Countdown {
   } 
   // ADD ESCROW COUNTDOWN
   // ADD fee calculator and overall functionality
+
+  // Finalize agreement, check that everything is set, and start countdown
+  function finalize() {
+    require(_data.admin != address(0) && _data.buyer != address(0) && _data.seller != address(0) && _data.paymentAmount != 0 && _data.stakeAmount != 0 && _data.agreementParams[0] != 0 && _data.agreementParams[1] != 0, "Contract not initialized, check if you deposited funds correctly.");
+    Countdown._start();
+    emit Finalized();
+  }
+
+  // End the contract
+  function end() {
+    require(Countdown.getCountdownStatus() == isOver);
+    releaseFunds();
+    emit Ended();
+  }
+
+  // Punish functio for the buyer to use if the service was dissatisfactory
+  // Also ends the contract
+  function punish() payable {
+    require(Countdown.getCountdownStatus() == isActive); // can only be used before the countdown is over
+    require(buyer == msg.sender, "Only buyer can use this function");
+    correctDeposit = div(_data.stakeAmount, _data.agreementParams.ratio);
+    require(msg.value >= correctDeposit, "Insufficient funds provided");
+    admin.transfer(msg.value); //Transfer the fee to admin account 
+    admin.transfer(add(deposits, stakes)); //ToDo: add separate function for releasing funds to admin
+    emit Ended();
+  }
+
 }
