@@ -58,7 +58,7 @@ contract Escrow is Countdown {
     uint256 paymentAmount,
     uint256 stakeAmount,
     uint256 countdownLength,
-    bytes agreementParams
+    bytes memory agreementParams
   ) public {
     // set participants if defined
     if (buyer != address(0)) {
