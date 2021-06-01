@@ -84,7 +84,7 @@ contract Escrow is Countdown {
       _data.paymentAmount = uint128(paymentAmount);
     }
 
-    if (stakeAmount != uint256(0) {
+    if (stakeAmount != uint256(0)) {
       require(stakeAmount <= uint256(uint128(stakeAmount)), "stakeAmount is too large");
       _data.stakeAmount = uint128(stakeAmount);
     }
