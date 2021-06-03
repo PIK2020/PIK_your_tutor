@@ -124,11 +124,11 @@ contract Escrow is Countdown, SafeMath {
   }
 
   function depositStake() public payable {
-    seller = msg.sender;
+    _data.seller = msg.sender;
     uint256 stake = msg.value;
-    stakes[seller] = add(stakes[seller], stake);
+    stakes[_data.seller] = add(stakes[_data.seller], stake);
 
-    emit StakeDeposited(seller, stake);
+    emit StakeDeposited(_data.seller, stake);
   }
 
   function releaseFunds() internal {
