@@ -11,6 +11,8 @@ import "./Countdown.sol";
 contract Escrow is Countdown {
 
   using SafeMath for uint256;
+  using SafeMath for uint128;
+  using SafeMath for uint120;
 
   // All the data we want to keep track of in our contract
   Data private _data;
