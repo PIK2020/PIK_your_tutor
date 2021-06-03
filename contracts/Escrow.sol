@@ -8,7 +8,7 @@ import "./Countdown.sol";
 //The Escrow contract will hold and later release the assets of both parties 
 //provided they uphold their respective ends of the bargain.
 
-contract Escrow is Countdown {
+contract Escrow is Countdown, SafeMath {
 
   using SafeMath for uint256;
   using SafeMath for uint128;
