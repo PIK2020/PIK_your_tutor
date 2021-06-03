@@ -131,10 +131,11 @@ contract Escrow is Countdown, SafeMath {
     emit StakeDeposited(_data.seller, stake);
   }
 
-  function releaseFunds() internal {
+  function releaseFunds(address payable seller) internal {
+    require(seller == _data.seller);
     // add if statement for the escrow countdown or fulfilled function
     uint256 payout = add(deposits, stakes);
-    _data.seller.transfer(payout);
+    seller.transfer(payout);
     deposits = 0;
     stakes = 0;
   } 
