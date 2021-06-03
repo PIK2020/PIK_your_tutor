@@ -116,11 +116,11 @@ contract Escrow is Countdown {
   // define a punish function that the student can pay to to "destroy" part of or the entire stake of a bad tutor
 
   function depositPayment() public payable {
-    buyer = msg.sender;
+    _data.buyer = msg.sender;
     uint256 amount = msg.value;
-    deposits[buyer] = add(deposits[buyer], amount);
+    deposits[_data.buyer] = add(deposits[_data.buyer], amount);
 
-    emit PaymentDeposited(buyer, amount); 
+    emit PaymentDeposited(_data.buyer, amount); 
   }
 
   function depositStake() public payable {
