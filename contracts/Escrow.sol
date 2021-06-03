@@ -158,12 +158,13 @@ contract Escrow is Countdown, SafeMath {
   // Punish functio for the buyer to use if the service was dissatisfactory
   // Also ends the contract
   function punish() public payable {
+    uint256 correctDeposit;
     require(Countdown.getCountdownStatus() == isActive); // can only be used before the countdown is over
-    require(buyer == msg.sender, "Only buyer can use this function");
+    require(_data.buyer == msg.sender, "Only buyer can use this function");
     correctDeposit = div(_data.stakeAmount, _data.agreementParams.ratio);
     require(msg.value >= correctDeposit, "Insufficient funds provided");
-    admin.transfer(msg.value); //Transfer the fee to admin account 
-    admin.transfer(add(deposits, stakes)); //ToDo: add separate function for releasing funds to admin
+    _data.admin.transfer(msg.value); //Transfer the fee to admin account 
+    _data.admin.transfer(add(deposits, stakes)); //ToDo: add separate function for releasing funds to admin
     emit Ended();
   }
 
