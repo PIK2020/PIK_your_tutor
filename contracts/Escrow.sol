@@ -95,7 +95,7 @@ contract Escrow is Countdown, SafeMath {
     if (agreementParams.length != 0) {
       (
         uint256 ratio,
-        uint256 countdownLength
+        uint256 agreementCountdown
       ) = abi.decode(agreementParams, (uint256, uint256));
       require(ratio == uint256(uint120(ratio)), "ratio out of bounds");
       require(agreementCountdown == uint256(uint128(agreementCountdown)), "agreementCountdown out of bounds");
