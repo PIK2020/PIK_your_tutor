@@ -134,7 +134,7 @@ contract Escrow is Countdown, SafeMath {
   function releaseFunds() internal {
     // add if statement for the escrow countdown or fulfilled function
     uint256 payout = add(deposits, stakes);
-    seller.transfer(payout); 
+    _data.seller.transfer(payout);
     deposits = 0;
     stakes = 0;
   } 
