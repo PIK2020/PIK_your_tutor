@@ -1,4 +1,4 @@
-pragma solidity >=0.5.0 <0.9.0;
+pragma solidity 0.5.16;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "./Countdown.sol";
@@ -8,7 +8,7 @@ import "./Countdown.sol";
 //The Escrow contract will hold and later release the assets of both parties 
 //provided they uphold their respective ends of the bargain.
 
-contract Escrow is Countdown, SafeMath {
+contract Escrow is Countdown {
 
   using SafeMath for uint256;
   using SafeMath for uint128;
