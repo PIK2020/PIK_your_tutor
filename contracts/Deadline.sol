@@ -68,13 +68,13 @@ contract Deadline {
   /// @notice Validate if the state machine is in the DeadlineStatus.isNull state
   /// @return validity bool true if correct state
 
-  function isNull() internal view returns (bool status) {
+  function isNull() internal virtual view returns (bool status) {
     return getDeadlineStatus() == DeadlineStatus.isNull;
   }
 
   /// @notice Validate if the state machine is in the DeadlineStatus.isSet state
   /// @return validity bool true if correct state
-  function isSet() internal view returns (bool status) {
+  function isSet() internal virtual view returns (bool status) {
     return getDeadlineStatus() == DeadlineStatus.isSet;
   }
 
