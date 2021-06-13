@@ -32,7 +32,7 @@ contract Countdown is Deadline {
     /// @notice Start the countdown based on the current block timestamp
     /// @return deadline uint256 Unix timestamp of the end of the countdown (current timestamp + countdown length).
     function _start() internal returns (uint256 deadline) {
-        deadline = _length.add(now);
+        deadline = _length.add(block.timestamp);
         Deadline._setDeadline(deadline);
         return deadline;
     }
@@ -65,13 +65,13 @@ contract Countdown is Deadline {
 
     /// @notice Validate if the state machine is in the CountdownStatus.isNull state
     /// @return validity bool true if correct state
-    function isNull() internal view returns (bool validity) {
+    function isNull() internal override view returns (bool validity) {
         return getCountdownStatus() == CountdownStatus.isNull;
     }
 
     /// @notice Validate if the state machine is in the CountdownStatus.isSet state
     /// @return validity bool true if correct state
-    function isSet() internal view returns (bool validity) {
+    function isSet() internal override view returns (bool validity) {
         return getCountdownStatus() == CountdownStatus.isSet;
     }
 
@@ -83,7 +83,7 @@ contract Countdown is Deadline {
 
     /// @notice Validate if the state machine is in the CountdownStatus.isOver state
     /// @return validity bool true if correct state
-    function isOver() internal view returns (bool validity) {
+    function isOver() internal override view returns (bool validity) {
         return getCountdownStatus() == CountdownStatus.isOver;
     }
 
