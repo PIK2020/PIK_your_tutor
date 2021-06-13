@@ -113,7 +113,7 @@ contract Escrow is Countdown {
   function depositPayment() public payable {
     _data.buyer = msg.sender;
     uint256 amount = msg.value;
-    _data.paymentAmount = _data.paymentAmount + amount;
+    _data.paymentAmount = uint128(_data.paymentAmount + amount);
     deposits[_data.buyer] = deposits[_data.buyer] + amount;
 
     emit PaymentDeposited(_data.buyer, amount); 
@@ -130,7 +130,7 @@ contract Escrow is Countdown {
   function releaseFunds(address payable seller) internal {
     require(seller == _data.seller);
     // add if statement for the escrow countdown or fulfilled function
-    uint256 payout = deposits + stakes;
+    uint256 payout = _data.paymentAmount + _data.stakeAmount;
     seller.transfer(payout);
     deposits = 0;
     stakes = 0;
