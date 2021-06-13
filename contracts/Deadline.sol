@@ -1,6 +1,6 @@
 pragma solidity >=0.6.0 <0.9.0;
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "./SafeMath.sol";
 
 
 /// @title Deadline
