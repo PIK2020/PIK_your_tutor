@@ -118,6 +118,7 @@ contract Escrow is Countdown {
   function depositPayment() public payable {
     _data.buyer = msg.sender;
     uint256 amount = msg.value;
+    _data.paymentAmount = add(_data.paymentAmount, amount);
     deposits[_data.buyer] = add(deposits[_data.buyer], amount);
 
     emit PaymentDeposited(_data.buyer, amount); 
