@@ -80,7 +80,7 @@ contract Deadline {
 
   /// @notice Validate if the state machine is in the DeadlineStatus.isOver state
   /// @return validity bool true if correct state
-  function isOver() internal view returns (bool status) {
+  function isOver() internal virtual view returns (bool status) {
     return getDeadlineStatus() == DeadlineStatus.isOver;
   }
 
