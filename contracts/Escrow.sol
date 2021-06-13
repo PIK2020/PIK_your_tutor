@@ -1,6 +1,5 @@
 pragma solidity >=0.6.0 <0.9.0;
 
-import "./SafeMath.sol";
 import "./Countdown.sol";
 
 //The Escrow Smart Contract for PIK. An escrow is by definition a third party
