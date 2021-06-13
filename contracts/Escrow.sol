@@ -1,6 +1,6 @@
-pragma solidity >=0.5.0 <0.9.0;
+pragma solidity >=0.6.0 <0.9.0;
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "./SafeMath.sol";
 import "./Countdown.sol";
 
 //The Escrow Smart Contract for PIK. An escrow is by definition a third party
@@ -11,6 +11,8 @@ import "./Countdown.sol";
 contract Escrow is Countdown {
 
   using SafeMath for uint256;
+  using SafeMath for uint128;
+  using SafeMath for uint120;
 
   // All the data we want to keep track of in our contract
   Data private _data;
@@ -93,7 +95,7 @@ contract Escrow is Countdown {
     if (agreementParams.length != 0) {
       (
         uint256 ratio,
-        uint256 countdownLength
+        uint256 agreementCountdown
       ) = abi.decode(agreementParams, (uint256, uint256));
       require(ratio == uint256(uint120(ratio)), "ratio out of bounds");
       require(agreementCountdown == uint256(uint128(agreementCountdown)), "agreementCountdown out of bounds");
@@ -114,25 +116,26 @@ contract Escrow is Countdown {
   // define a punish function that the student can pay to to "destroy" part of or the entire stake of a bad tutor
 
   function depositPayment() public payable {
-    buyer = msg.sender;
+    _data.buyer = msg.sender;
     uint256 amount = msg.value;
-    deposits[buyer] = add(deposits[buyer], amount);
+    deposits[_data.buyer] = add(deposits[_data.buyer], amount);
 
-    emit PaymentDeposited(buyer, amount); 
+    emit PaymentDeposited(_data.buyer, amount); 
   }
 
   function depositStake() public payable {
-    seller = msg.sender;
+    _data.seller = msg.sender;
     uint256 stake = msg.value;
-    stakes[seller] = add(stakes[seller], stake);
+    stakes[_data.seller] = add(stakes[_data.seller], stake);
 
-    emit StakeDeposited(seller, stake);
+    emit StakeDeposited(_data.seller, stake);
   }
 
-  function releaseFunds() internal {
+  function releaseFunds(address payable seller) internal {
+    require(seller == _data.seller);
     // add if statement for the escrow countdown or fulfilled function
     uint256 payout = add(deposits, stakes);
-    seller.transfer(payout); 
+    seller.transfer(payout);
     deposits = 0;
     stakes = 0;
   } 
@@ -156,12 +159,13 @@ contract Escrow is Countdown {
   // Punish functio for the buyer to use if the service was dissatisfactory
   // Also ends the contract
   function punish() public payable {
+    uint256 correctDeposit;
     require(Countdown.getCountdownStatus() == isActive); // can only be used before the countdown is over
-    require(buyer == msg.sender, "Only buyer can use this function");
+    require(_data.buyer == msg.sender, "Only buyer can use this function");
     correctDeposit = div(_data.stakeAmount, _data.agreementParams.ratio);
     require(msg.value >= correctDeposit, "Insufficient funds provided");
-    admin.transfer(msg.value); //Transfer the fee to admin account 
-    admin.transfer(add(deposits, stakes)); //ToDo: add separate function for releasing funds to admin
+    _data.admin.transfer(msg.value); //Transfer the fee to admin account 
+    _data.admin.transfer(add(deposits, stakes)); //ToDo: add separate function for releasing funds to admin
     emit Ended();
   }
 
