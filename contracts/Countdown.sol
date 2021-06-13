@@ -11,6 +11,7 @@ import "./Deadline.sol";
 /// @dev State Machine: https://github.com/erasureprotocol/erasure-protocol/blob/release/v1.3.x/docs/state-machines/modules/Countdown.png
 /// @notice This module provides an arbitrary length countdown.
 ///         The countdown makes use of block timestamps to determine start time and end time.
+
 contract Countdown is Deadline {
 
     using SafeMath for uint256;

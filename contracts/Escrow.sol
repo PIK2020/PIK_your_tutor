@@ -1,6 +1,5 @@
 pragma solidity >=0.6.0 <0.9.0;
 
-import "./SafeMath.sol";
 import "./Countdown.sol";
 
 //The Escrow Smart Contract for PIK. An escrow is by definition a third party
@@ -9,10 +8,6 @@ import "./Countdown.sol";
 //provided they uphold their respective ends of the bargain.
 
 contract Escrow is Countdown {
-
-  using SafeMath for uint256;
-  using SafeMath for uint128;
-  using SafeMath for uint120;
 
   // All the data we want to keep track of in our contract
   Data private _data;
@@ -118,7 +113,8 @@ contract Escrow is Countdown {
   function depositPayment() public payable {
     _data.buyer = msg.sender;
     uint256 amount = msg.value;
-    deposits[_data.buyer] = add(deposits[_data.buyer], amount);
+    _data.paymentAmount = uint128(_data.paymentAmount + amount);
+    deposits[_data.buyer] = deposits[_data.buyer] + amount;
 
     emit PaymentDeposited(_data.buyer, amount); 
   }
@@ -126,7 +122,7 @@ contract Escrow is Countdown {
   function depositStake() public payable {
     _data.seller = msg.sender;
     uint256 stake = msg.value;
-    stakes[_data.seller] = add(stakes[_data.seller], stake);
+    stakes[_data.seller] = stakes[_data.seller] + stake;
 
     emit StakeDeposited(_data.seller, stake);
   }
@@ -134,7 +130,7 @@ contract Escrow is Countdown {
   function releaseFunds(address payable seller) internal {
     require(seller == _data.seller);
     // add if statement for the escrow countdown or fulfilled function
-    uint256 payout = add(deposits, stakes);
+    uint256 payout = _data.paymentAmount + _data.stakeAmount;
     seller.transfer(payout);
     deposits = 0;
     stakes = 0;
@@ -162,10 +158,10 @@ contract Escrow is Countdown {
     uint256 correctDeposit;
     require(Countdown.getCountdownStatus() == isActive); // can only be used before the countdown is over
     require(_data.buyer == msg.sender, "Only buyer can use this function");
-    correctDeposit = div(_data.stakeAmount, _data.agreementParams.ratio);
+    correctDeposit = _data.stakeAmount / _data.agreementParams.ratio;
     require(msg.value >= correctDeposit, "Insufficient funds provided");
     _data.admin.transfer(msg.value); //Transfer the fee to admin account 
-    _data.admin.transfer(add(deposits, stakes)); //ToDo: add separate function for releasing funds to admin
+    _data.admin.transfer(deposits + stakes); //ToDo: add separate function for releasing funds to admin
     emit Ended();
   }
 
