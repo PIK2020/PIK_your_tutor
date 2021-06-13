@@ -42,8 +42,8 @@ contract Deadline {
   ///         Returns 0 if deadline is not set or is passed.
   /// @return time uint256 Amount of time in seconds until deadline.
   function getTimeRemaining() public view returns (uint256 time) {
-    if (_deadline > now)
-      return _deadline.sub(now);
+    if (_deadline > block.timestamp)
+      return _deadline.sub(block.timestamp);
     else
       return 0;
   }
@@ -59,7 +59,7 @@ contract Deadline {
   function getDeadlineStatus() public view returns (DeadlineStatus status) {
     if (_deadline == 0)
       return DeadlineStatus.isNull;
-    if (_deadline > now)
+    if (_deadline > block.timestamp)
       return DeadlineStatus.isSet;
     else
       return DeadlineStatus.isOver;
