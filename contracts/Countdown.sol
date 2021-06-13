@@ -32,7 +32,7 @@ contract Countdown is Deadline {
     /// @notice Start the countdown based on the current block timestamp
     /// @return deadline uint256 Unix timestamp of the end of the countdown (current timestamp + countdown length).
     function _start() internal returns (uint256 deadline) {
-        deadline = _length.add(now);
+        deadline = _length.add(block.timestamp);
         Deadline._setDeadline(deadline);
         return deadline;
     }
