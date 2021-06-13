@@ -132,8 +132,8 @@ contract Escrow is Countdown {
     // add if statement for the escrow countdown or fulfilled function
     uint256 payout = _data.paymentAmount + _data.stakeAmount;
     seller.transfer(payout);
-    deposits = 0;
-    stakes = 0;
+    _data.paymentAmount = 0;
+    _data.stakeAmount = 0;
   } 
   // ADD ESCROW COUNTDOWN
   // ADD fee calculator and overall functionality
