@@ -147,21 +147,22 @@ contract Escrow is Countdown {
 
   // End the contract
   function end() internal {
-    require(Countdown.getCountdownStatus() == isOver);
+    require(Countdown.getCountdownStatus() == isOver());
     releaseFunds();
     emit Ended();
   }
 
   // Punish functio for the buyer to use if the service was dissatisfactory
   // Also ends the contract
-  function punish() public payable {
+  // Note: we have to set the address parameter to be the admin address by default
+  function punish(address payable payAdmin) public payable {
     uint256 correctDeposit;
     require(Countdown.getCountdownStatus() == isActive); // can only be used before the countdown is over
     require(_data.buyer == msg.sender, "Only buyer can use this function");
-    correctDeposit = _data.stakeAmount / _data.agreementParams.ratio;
+    correctDeposit = _data.stakeAmount / _data.agreementParams.griefingRatio;
     require(msg.value >= correctDeposit, "Insufficient funds provided");
-    _data.admin.transfer(msg.value); //Transfer the fee to admin account 
-    _data.admin.transfer(deposits + stakes); //ToDo: add separate function for releasing funds to admin
+    payAdmin.transfer(msg.value); //Transfer the fee to admin account 
+    payAdmin.transfer(_data.paymentAmount + _data.stakeAmount); //ToDo: add separate function for releasing funds to admin
     emit Ended();
   }
 
