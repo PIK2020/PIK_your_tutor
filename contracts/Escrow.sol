@@ -157,7 +157,7 @@ contract Escrow is Countdown {
   // Note: we have to set the address parameter to be the admin address by default
   function punish(address payable payAdmin) public payable {
     uint256 correctDeposit;
-    require(Countdown.getCountdownStatus() == isActive); // can only be used before the countdown is over
+    require(Countdown.getCountdownStatus() == Countdown.CountdownStatus.isActive); // can only be used before the countdown is over
     require(_data.buyer == msg.sender, "Only buyer can use this function");
     correctDeposit = _data.stakeAmount / _data.agreementParams.griefingRatio;
     require(msg.value >= correctDeposit, "Insufficient funds provided");
