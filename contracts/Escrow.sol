@@ -147,7 +147,7 @@ contract Escrow is Countdown {
 
   // End the contract
   function end() internal {
-    require(Countdown.getCountdownStatus() == isOver());
+    require(Countdown.getCountdownStatus() == Countdown.CountdownStatus.isOver);
     releaseFunds();
     emit Ended();
   }
