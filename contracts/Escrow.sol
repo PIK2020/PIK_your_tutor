@@ -141,14 +141,14 @@ contract Escrow is Countdown {
   // Finalize agreement, check that everything is set, and start countdown
   function finalize() internal {
     require(_data.admin != address(0) && _data.buyer != address(0) && _data.seller != address(0) && _data.paymentAmount != 0 && _data.stakeAmount != 0 && _data.agreementParams.griefingRatio != 0 && _data.agreementParams.countdownLength != 0, "Contract not initialized, check if you deposited funds correctly.");
-    Countdown._start();
     emit Finalized();
+    Countdown._start();
   }
 
   // End the contract
   function end() internal {
-    require(Countdown.getCountdownStatus() == isOver());
-    releaseFunds();
+    require(Countdown.getCountdownStatus() == Countdown.CountdownStatus.isOver);
+    releaseFunds(payable(_data.seller));
     emit Ended();
   }
 
@@ -157,7 +157,7 @@ contract Escrow is Countdown {
   // Note: we have to set the address parameter to be the admin address by default
   function punish(address payable payAdmin) public payable {
     uint256 correctDeposit;
-    require(Countdown.getCountdownStatus() == isActive); // can only be used before the countdown is over
+    require(Countdown.getCountdownStatus() == Countdown.CountdownStatus.isActive); // can only be used before the countdown is over
     require(_data.buyer == msg.sender, "Only buyer can use this function");
     correctDeposit = _data.stakeAmount / _data.agreementParams.griefingRatio;
     require(msg.value >= correctDeposit, "Insufficient funds provided");
