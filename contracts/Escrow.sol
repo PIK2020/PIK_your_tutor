@@ -141,8 +141,8 @@ contract Escrow is Countdown {
   // Finalize agreement, check that everything is set, and start countdown
   function finalize() internal {
     require(_data.admin != address(0) && _data.buyer != address(0) && _data.seller != address(0) && _data.paymentAmount != 0 && _data.stakeAmount != 0 && _data.agreementParams.griefingRatio != 0 && _data.agreementParams.countdownLength != 0, "Contract not initialized, check if you deposited funds correctly.");
-    Countdown._start();
     emit Finalized();
+    Countdown._start();
   }
 
   // End the contract
