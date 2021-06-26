@@ -48,7 +48,7 @@ contract Escrow is Countdown {
   event Cancelled();
   event Ended();
 
-  constructor(
+  function initialize(
     address admin,
     address buyer,
     address seller,
